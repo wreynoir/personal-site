@@ -58,6 +58,7 @@ export default function Room({ dispatches }: RoomProps) {
   const [modal, setModal] = useState<ModalType>(null);
   const [theme, setTheme] = useState<'day' | 'night'>('day');
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
+  const [photoIndex, setPhotoIndex] = useState(0);
 
   const isNight = theme === 'night';
 
@@ -230,7 +231,14 @@ export default function Room({ dispatches }: RoomProps) {
               {modal === 'contact' && <ContactModal />}
               {modal === 'blog' && <BlogModal />}
               {modal === 'about' && <AboutModal />}
-              {modal === 'photos' && <PhotosModal onSelect={setSelectedPhoto} />}
+              {modal === 'photos' && (
+                <PhotosModal
+                  onSelect={(photo, idx) => {
+                    setSelectedPhoto(photo);
+                    setPhotoIndex(idx);
+                  }}
+                />
+              )}
             </motion.div>
           </motion.div>
         )}
@@ -258,6 +266,31 @@ export default function Room({ dispatches }: RoomProps) {
                 onClick={() => setSelectedPhoto(null)}
               >
                 Close
+              </button>
+              <button
+                className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full border border-white/40 bg-black/40 p-2 text-slate-200 hover:border-amber-300 hover:text-amber-200"
+                onClick={e => {
+                  e.stopPropagation();
+                  const prevIndex =
+                    (photoIndex - 1 + photos.length) % photos.length;
+                  setPhotoIndex(prevIndex);
+                  setSelectedPhoto(photos[prevIndex]);
+                }}
+                aria-label="Previous photo"
+              >
+                ‹
+              </button>
+              <button
+                className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full border border-white/40 bg-black/40 p-2 text-slate-200 hover:border-amber-300 hover:text-amber-200"
+                onClick={e => {
+                  e.stopPropagation();
+                  const nextIndex = (photoIndex + 1) % photos.length;
+                  setPhotoIndex(nextIndex);
+                  setSelectedPhoto(photos[nextIndex]);
+                }}
+                aria-label="Next photo"
+              >
+                ›
               </button>
               <img
                 src={selectedPhoto.src}
@@ -300,6 +333,8 @@ function Hotspot({ label, onClick, style }: HotspotProps) {
 /* ------------ MODALS (using /data) ------------ */
 
 function ProjectsModal() {
+  const rotations = ['md:-rotate-2', 'md:rotate-1', 'md:-rotate-1'];
+
   return (
     <div className="space-y-4">
       <header>
@@ -310,34 +345,77 @@ function ProjectsModal() {
           Projects on the Workbench
         </h2>
         <p className="mt-1 text-sm text-slate-300">
-          The sketches on the desk are a peek into things I&apos;m building and
-          tinkering with.
+          Click a sketch to read the notes that go with it.
         </p>
       </header>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-3">
-        {projects.map(project => (
-          <article
-            key={project.title}
-            className="flex flex-col rounded-2xl border border-white/10 bg-slate-900/70 p-4 shadow-lg"
-          >
-            <h3 className="font-heading text-lg text-amber-300">
-              {project.title}
-            </h3>
-            <p className="mt-2 text-sm text-slate-200">
-              {project.description}
-            </p>
-            {project.link && (
-              <a
-                href={project.link}
-                target="_blank"
-                className="mt-3 text-sm text-teal-300 hover:underline"
+      <div className="mt-5 rounded-[36px] border border-amber-300/30 bg-gradient-to-br from-[#d4b48c]/60 via-[#c79766]/55 to-[#b0744f]/60 p-6 shadow-[inset_0_30px_80px_rgba(0,0,0,0.25)]">
+        <div className="grid gap-8 md:grid-cols-3">
+          {projects.map((project, idx) => {
+            const rotation = rotations[idx % rotations.length];
+            const Wrapper = project.link ? 'a' : 'div';
+            const wrapperProps = project.link
+              ? {
+                  href: project.link,
+                  target: '_blank',
+                  rel: 'noreferrer'
+                }
+              : {};
+
+            return (
+              <Wrapper
+                key={project.title}
+                {...wrapperProps}
+                className={`relative block ${rotation}`}
               >
-                View →
-              </a>
-            )}
-          </article>
-        ))}
+                <span className="pointer-events-none absolute left-10 top-3 h-4 w-14 rounded bg-[#f3e0b8]/70 shadow-md" />
+                <div className="relative flex h-full flex-col overflow-hidden rounded-[28px] border border-[#d0c0a3] bg-[#fef9ee]/95 shadow-xl transition-transform duration-200 hover:-translate-y-1 hover:shadow-2xl">
+                  <div className="aspect-[4/3] border-b border-[#d0c0a3] bg-[radial-gradient(circle_at_top,#fefaf3,#f4e6cd)]">
+                    {project.sketchImage ? (
+                      <img
+                        src={project.sketchImage}
+                        alt={`${project.title} sketch`}
+                        className="h-full w-full object-cover object-center mix-blend-multiply"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.3em] text-amber-400/70">
+                        Sketch coming soon
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-1 flex-col px-4 pb-4 pt-3 text-slate-800">
+                    <h3 className="font-heading text-lg text-slate-900">
+                      {project.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed">
+                      {project.description}
+                    </p>
+                    {project.link && (
+                      <span className="mt-4 inline-flex items-center text-sm font-semibold text-amber-600">
+                        {project.ctaLabel ?? 'Open'}
+                        <svg
+                          className="ml-1 h-3 w-3"
+                          viewBox="0 0 12 12"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M2 6h8M8 2l2 4-2 4"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </span>
+                    )}
+                  </div>
+                  <div className="pointer-events-none absolute inset-0 rounded-[28px] border border-white/60 opacity-50 mix-blend-overlay" />
+                </div>
+              </Wrapper>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -372,8 +450,8 @@ function JournalModal({ dispatches }: { dispatches: Dispatch[] }) {
           <div className="journal-scroll flex-1 space-y-4 overflow-y-auto rounded-xl bg-amber-950/60 p-3 text-[13px] leading-relaxed text-amber-50/95">
             {latest.length === 0 && (
               <p className="text-amber-100/80">
-                (No dispatches yet.) Drop some <code>.md</code> files into{' '}
-                <code>/dispatches</code> to populate this page.
+                (No dispatches yet.) Add entries to your Notion “Daily Journal”
+                database or drop markdown files into <code>/dispatches</code>.
               </p>
             )}
 
@@ -842,7 +920,11 @@ function AboutModal() {
   );
 }
 
-function PhotosModal({ onSelect }: { onSelect: (photo: Photo) => void }) {
+function PhotosModal({
+  onSelect
+}: {
+  onSelect: (photo: Photo, index: number) => void;
+}) {
   return (
     <div className="space-y-4">
       <header>
@@ -861,11 +943,11 @@ function PhotosModal({ onSelect }: { onSelect: (photo: Photo) => void }) {
       <div className="mt-4 rounded-2xl border border-white/10 bg-black/30 p-3">
         <div className="max-h-[360px] overflow-y-auto pr-2">
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-            {photos.map(photo => (
+            {photos.map((photo, idx) => (
               <button
                 type="button"
                 key={photo.src}
-                onClick={() => onSelect(photo)}
+                onClick={() => onSelect(photo, idx)}
                 className="group text-left overflow-hidden rounded-xl border border-white/10 bg-black/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
                 aria-label={`Open ${photo.alt}`}
               >

@@ -13,7 +13,7 @@ export const photos = [
   },
   {
     src: "/photos/CPCC-founders.jpeg",
-    alt: "The two people who actually liked this craxy idea first"
+    alt: "The two people who actually liked the Central Park Croquet Club idea first"
   },
   {
     src: "/photos/CPCC.jpeg",
@@ -57,7 +57,7 @@ export const photos = [
   },
   {
     src: "/photos/Reflecting-pool.jpeg",
-    alt: "Stood on water the day before the inauguration"
+    alt: "On the reflecting pool the night before the inauguration"
   },
   {
     src: "/photos/Rocket-launch.jpeg",

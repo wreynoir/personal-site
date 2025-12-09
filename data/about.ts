@@ -39,13 +39,6 @@ export const about = {
         "A pragmatic manifesto for founders: great ideas need to intersect with capital incentives, market timing, and believable execution plans. Harrison lays out how to tell the story investors need to hear without abandoning the soul of the product."
     },
     {
-      title: "Part 1: My Life is a Lie",
-      creator: "Michael Green",
-      url: "https://www.yesigiveafig.com/p/part-1-my-life-is-a-lie",
-      summary:
-        "Green dissects how his personal identity was built on unquestioned narratives about work, success, and status—then shows what happens when those narratives collapse. It’s a brutally honest reckoning with ego, loyalty, and the cost of self-deception."
-    },
-    {
       title: "Here’s How to Live: Create",
       creator: "Derek Sivers",
       url: "https://sive.rs/htl23",
