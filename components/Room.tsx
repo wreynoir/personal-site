@@ -9,7 +9,7 @@ import { projects } from '@/data/projects';
 import { contact } from '@/data/contact';
 import { about } from '@/data/about';
 import { photos } from '@/data/photos';
-import { books, goodreadsProfile } from '@/data/books';
+import { goodreadsProfile } from '@/data/books';
 import { blog } from '@/data/blog';
 
 type ModalType =
@@ -647,6 +647,7 @@ function BlogModal() {
         }
       } catch (err) {
         if (!cancelled) {
+          console.error('Failed to load Substack posts', err);
           setError('Could not load Substack posts right now.');
         }
       } finally {
@@ -989,7 +990,7 @@ function GoodreadsWidget({ shelf, widgetId }: GoodreadsWidgetProps) {
     return () => {
       script.remove();
     };
-  }, []);
+  }, [shelf, widgetId]);
 
   return (
     <>

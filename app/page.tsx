@@ -1,6 +1,9 @@
 import { getDispatches } from '@/lib/getDispatches';
 import Room from '@/components/Room';
 
+// Revalidate this page so Notion updates surface without a redeploy.
+export const revalidate = 60 * 5; // 5 minutes
+
 export default async function Home() {
   const dispatches = await getDispatches();
 

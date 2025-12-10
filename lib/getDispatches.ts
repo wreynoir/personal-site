@@ -9,6 +9,26 @@ export interface Dispatch {
   content: string;
 }
 
+interface NotionTextBlock {
+  plain_text: string;
+}
+
+interface NotionJournalProperties {
+  Title?: { title?: NotionTextBlock[] };
+  Date?: { date?: { start: string | null } };
+  Entry?: { rich_text?: NotionTextBlock[] };
+}
+
+interface NotionJournalPage {
+  id: string;
+  created_time: string;
+  properties?: NotionJournalProperties;
+}
+
+interface NotionJournalResponse {
+  results: NotionJournalPage[];
+}
+
 export async function getDispatches(): Promise<Dispatch[]> {
   const notionToken = process.env.NOTION_TOKEN;
   const notionDatabaseId = process.env.NOTION_DATABASE_ID;
@@ -62,7 +82,7 @@ async function getDispatchesFromNotion(token: string, databaseId: string) {
     );
   }
 
-  const data = await response.json();
+  const data = (await response.json()) as NotionJournalResponse;
 
   if (process.env.NODE_ENV !== 'production') {
     console.log(
@@ -70,22 +90,21 @@ async function getDispatchesFromNotion(token: string, databaseId: string) {
     );
   }
 
-  const dispatches: Dispatch[] = data.results.map((page: any) => {
-    const props: any = (page as any).properties ?? {};
+  const dispatches: Dispatch[] = data.results.map(page => {
+    const props = page.properties ?? {};
 
+    const titleBlocks = props.Title?.title ?? [];
     const title =
-      props.Title?.title?.map((t: any) => t.plain_text).join(' ').trim() ||
+      titleBlocks.map(block => block.plain_text).join(' ').trim() ||
       'Untitled entry';
 
     const date =
       props.Date?.date?.start ||
       new Date(page.created_time).toISOString().slice(0, 10);
 
+    const contentBlocks = props.Entry?.rich_text ?? [];
     const content =
-      props.Entry?.rich_text
-        ?.map((block: any) => block.plain_text)
-        .join('\n')
-        .trim() || '';
+      contentBlocks.map(block => block.plain_text).join('\n').trim() || '';
 
     return {
       id: page.id,
