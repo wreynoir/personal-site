@@ -350,71 +350,106 @@ function ProjectsModal() {
       </header>
 
       <div className="mt-5 rounded-[36px] border border-amber-300/30 bg-gradient-to-br from-[#d4b48c]/60 via-[#c79766]/55 to-[#b0744f]/60 p-6 shadow-[inset_0_30px_80px_rgba(0,0,0,0.25)]">
-        <div className="grid gap-8 md:grid-cols-3">
-          {projects.map((project, idx) => {
-            const rotation = rotations[idx % rotations.length];
-            const Wrapper = project.link ? 'a' : 'div';
-            const wrapperProps = project.link
-              ? {
-                  href: project.link,
-                  target: '_blank',
-                  rel: 'noreferrer'
-                }
-              : {};
+        <div className="max-h-[60vh] overflow-y-auto pr-2 md:pr-1">
+          <div className="grid gap-8 md:grid-cols-3">
+            {projects.map((project, idx) => {
+              const rotation = rotations[idx % rotations.length];
+              const multiLinks =
+                project.links && project.links.length > 0 ? project.links : null;
+              const hasSingleLink = Boolean(project.link && !multiLinks);
+              const Wrapper = hasSingleLink ? 'a' : 'div';
+              const wrapperProps = hasSingleLink
+                ? {
+                    href: project.link,
+                    target: '_blank',
+                    rel: 'noreferrer'
+                  }
+                : {};
 
-            return (
-              <Wrapper
-                key={project.title}
-                {...wrapperProps}
-                className={`relative block ${rotation}`}
-              >
-                <span className="pointer-events-none absolute left-10 top-3 h-4 w-14 rounded bg-[#f3e0b8]/70 shadow-md" />
-                <div className="relative flex h-full flex-col overflow-hidden rounded-[28px] border border-[#d0c0a3] bg-[#fef9ee]/95 shadow-xl transition-transform duration-200 hover:-translate-y-1 hover:shadow-2xl">
-                  <div className="aspect-[4/3] border-b border-[#d0c0a3] bg-[radial-gradient(circle_at_top,#fefaf3,#f4e6cd)]">
-                    {project.sketchImage ? (
-                      <img
-                        src={project.sketchImage}
-                        alt={`${project.title} sketch`}
-                        className="h-full w-full object-cover object-center mix-blend-multiply"
-                      />
-                    ) : (
-                      <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.3em] text-amber-400/70">
-                        Sketch coming soon
-                      </div>
-                    )}
+              return (
+                <Wrapper
+                  key={project.title}
+                  {...wrapperProps}
+                  className={`relative block ${rotation}`}
+                >
+                  <span className="pointer-events-none absolute left-10 top-3 h-4 w-14 rounded bg-[#f3e0b8]/70 shadow-md" />
+                  <div className="relative flex h-full flex-col overflow-hidden rounded-[28px] border border-[#d0c0a3] bg-[#fef9ee]/95 shadow-xl transition-transform duration-200 hover:-translate-y-1 hover:shadow-2xl">
+                    <div className="aspect-[4/3] border-b border-[#d0c0a3] bg-[radial-gradient(circle_at_top,#fefaf3,#f4e6cd)]">
+                      {project.sketchImage ? (
+                        <img
+                          src={project.sketchImage}
+                          alt={`${project.title} sketch`}
+                          className="h-full w-full object-cover object-center mix-blend-multiply"
+                        />
+                      ) : (
+                        <div className="flex h-full items-center justify-center text-xs uppercase tracking-[0.3em] text-amber-400/70">
+                          Sketch coming soon
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-1 flex-col px-4 pb-4 pt-3 text-slate-800">
+                      <h3 className="font-heading text-lg text-slate-900">
+                        {project.title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-relaxed">
+                        {project.description}
+                      </p>
+                      {multiLinks ? (
+                        <div className="mt-4 flex flex-col gap-1">
+                          {multiLinks.map(link => (
+                            <a
+                              key={link.href}
+                              href={link.href}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="inline-flex items-center text-sm font-semibold text-amber-600 hover:text-amber-500"
+                            >
+                              {link.label}
+                              <svg
+                                className="ml-1 h-3 w-3"
+                                viewBox="0 0 12 12"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  d="M2 6h8M8 2l2 4-2 4"
+                                  stroke="currentColor"
+                                  strokeWidth="1.5"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                />
+                              </svg>
+                            </a>
+                          ))}
+                        </div>
+                      ) : (
+                        project.link && (
+                          <span className="mt-4 inline-flex items-center text-sm font-semibold text-amber-600">
+                            {project.ctaLabel ?? 'Open'}
+                            <svg
+                              className="ml-1 h-3 w-3"
+                              viewBox="0 0 12 12"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                            >
+                              <path
+                                d="M2 6h8M8 2l2 4-2 4"
+                                stroke="currentColor"
+                                strokeWidth="1.5"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                              />
+                            </svg>
+                          </span>
+                        )
+                      )}
+                    </div>
+                    <div className="pointer-events-none absolute inset-0 rounded-[28px] border border-white/60 opacity-50 mix-blend-overlay" />
                   </div>
-                  <div className="flex flex-1 flex-col px-4 pb-4 pt-3 text-slate-800">
-                    <h3 className="font-heading text-lg text-slate-900">
-                      {project.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed">
-                      {project.description}
-                    </p>
-                    {project.link && (
-                      <span className="mt-4 inline-flex items-center text-sm font-semibold text-amber-600">
-                        {project.ctaLabel ?? 'Open'}
-                        <svg
-                          className="ml-1 h-3 w-3"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M2 6h8M8 2l2 4-2 4"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </span>
-                    )}
-                  </div>
-                  <div className="pointer-events-none absolute inset-0 rounded-[28px] border border-white/60 opacity-50 mix-blend-overlay" />
-                </div>
-              </Wrapper>
-            );
-          })}
+                </Wrapper>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
@@ -447,7 +482,7 @@ function JournalModal({ dispatches }: { dispatches: Dispatch[] }) {
               Latest first
             </span>
           </div>
-          <div className="journal-scroll flex-1 space-y-4 overflow-y-auto rounded-xl bg-amber-950/60 p-3 text-[13px] leading-relaxed text-amber-50/95">
+          <div className="journal-scroll max-h-[55vh] space-y-4 overflow-y-auto rounded-xl bg-amber-950/60 p-3 pr-4 text-[13px] leading-relaxed text-amber-50/95">
             {latest.length === 0 && (
               <p className="text-amber-100/80">
                 (No dispatches yet.) Add entries to your Notion “Daily Journal”

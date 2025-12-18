@@ -22,5 +22,21 @@ export const projects = [
     link: 'https://icebreakr-five.vercel.app/',
     sketchImage: '/sketches/icebreakr.png',
     ctaLabel: 'Answer a question'
+  },
+  {
+    title: '12 Cities in 12 Months',
+    description:
+      'In 2023 I lived in a different city every month, documenting the experiment through daily TikToks, podcasts, and long-form reflections.',
+    sketchImage: '/sketches/12cities12months.jpg',
+    links: [
+      {
+        label: 'Watch the TikToks',
+        href: 'https://www.tiktok.com/@12cities12months'
+      },
+      {
+        label: 'Listen to the podcasts',
+        href: 'https://open.spotify.com/show/5xh1T0LwNafzi6ZpaeL57z?si=94bd101fcacb4deb'
+      }
+    ]
   }
 ];
